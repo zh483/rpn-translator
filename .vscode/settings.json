@@ -1,0 +1,35 @@
+{
+  // ---- Java 运行时：固定使用 JDK 25，避免 VS Code 去找 Oracle 的 javapath ----
+  "java.configuration.runtimes": [
+    {
+      "name": "JavaSE-25",
+      "path": "C:\\Program Files\\Microsoft\\jdk-25.0.5.102-hotspot",
+      "default": true
+    }
+  ],
+  "java.jdt.ls.java.home": "C:\\Program Files\\Microsoft\\jdk-25.0.5.102-hotspot",
+
+  // ---- 项目结构：源码在 src，编译产物在 out/classes（与 run.bat 一致） ----
+  "java.project.sourcePaths": ["src"],
+  "java.project.outputPath": "out/classes",
+  "java.project.referencedLibraries": [],
+
+  // ---- 编码：源码统一 UTF-8 无 BOM，中文注释才不会乱码 ----
+  "files.encoding": "utf8",
+  "files.eol": "\r\n",
+  "files.trimTrailingWhitespace": false,
+
+  // ---- 编辑器行为 ----
+  "editor.formatOnSave": false,
+  "editor.tabSize": 4,
+  "editor.insertSpaces": true,
+  "editor.rulers": [100],
+  "files.exclude": {
+    "out": true,
+    "**/*.class": true
+  },
+  "search.exclude": {
+    "out": true,
+    "figs": false
+  }
+}

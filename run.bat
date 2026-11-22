@@ -16,6 +16,15 @@ if not exist "%JAVA_HOME%\bin\javac.exe" (
 
 if not exist out\classes mkdir out\classes
 
+rem --- 还没写源码时给出友好提示，而不是一串 javac 报错 ---
+dir /b src\rpn\*.java >nul 2>&1
+if errorlevel 1 (
+    echo [INFO] src\rpn 下还没有 .java 文件。
+    echo        请先按 docs\Day01-任务卡.md 创建 Token / TokenType / CompileException / Lexer。
+    pause
+    exit /b 0
+)
+
 echo [1/2] 编译中 ...
 "%JAVA_HOME%\bin\javac.exe" -encoding UTF-8 -d out\classes src\rpn\*.java
 if errorlevel 1 (
