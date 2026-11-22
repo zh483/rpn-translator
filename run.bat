@@ -1,41 +1,43 @@
 @echo off
 rem =====================================================================
-rem  课设二启动脚本：编译 -> 启动本地服务 -> 自动打开浏览器
-rem  零第三方依赖，验收现场双击本文件即可运行。
+rem  Course design 2 launcher: compile -> start local server -> open browser
+rem  NOTE: keep this file ASCII-only. cmd.exe parses .bat with the OEM
+rem        code page (GBK on zh-CN Windows); UTF-8 Chinese breaks parsing.
 rem =====================================================================
 setlocal
 cd /d "%~dp0"
 
-rem --- 定位 JDK：优先用环境变量，找不到则回退到已知安装位置 ---
+rem --- locate JDK: prefer JAVA_HOME, fall back to known install path ---
 if not defined JAVA_HOME set "JAVA_HOME=C:\Program Files\Microsoft\jdk-25.0.5.102-hotspot"
 if not exist "%JAVA_HOME%\bin\javac.exe" (
-    echo [ERROR] 找不到 JDK，请检查 JAVA_HOME 环境变量：%JAVA_HOME%
+    echo [ERROR] JDK not found. Please check JAVA_HOME: %JAVA_HOME%
     pause
     exit /b 1
 )
 
 if not exist out\classes mkdir out\classes
 
-rem --- 还没写源码时给出友好提示，而不是一串 javac 报错 ---
+rem --- friendly message when there is no source yet ---
 dir /b src\rpn\*.java >nul 2>&1
 if errorlevel 1 (
-    echo [INFO] src\rpn 下还没有 .java 文件。
-    echo        请先按 docs\Day01-任务卡.md 创建 Token / TokenType / CompileException / Lexer。
+    echo [INFO] No .java files under src\rpn yet.
+    echo        Create Token / TokenType / CompileException / Lexer first,
+    echo        see the Day01 task card under docs\
     pause
     exit /b 0
 )
 
-echo [1/2] 编译中 ...
+echo [1/2] Compiling ...
 "%JAVA_HOME%\bin\javac.exe" -encoding UTF-8 -d out\classes src\rpn\*.java
 if errorlevel 1 (
-    echo [ERROR] 编译失败，请查看上面的报错。
+    echo [ERROR] Compilation failed. See messages above.
     pause
     exit /b 1
 )
 
-echo [2/2] 启动服务 http://127.0.0.1:8080 ...
+echo [2/2] Starting server at http://127.0.0.1:8080 ...
 start "" http://127.0.0.1:8080
 "%JAVA_HOME%\bin\java.exe" -cp out\classes rpn.Main
 
-echo 服务已退出。
+echo Server stopped.
 pause
