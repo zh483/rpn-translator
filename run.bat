@@ -8,7 +8,11 @@ setlocal
 cd /d "%~dp0"
 
 rem --- locate JDK: prefer JAVA_HOME, fall back to known install path ---
-if not defined JAVA_HOME set "JAVA_HOME=C:\Program Files\Microsoft\jdk-25.0.5.102-hotspot"
+if not exist "%JAVA_HOME%\bin\javac.exe" (
+    if exist "C:\Program Files\Microsoft\jdk-25.0.5.102-hotspot\bin\javac.exe" (
+        set "JAVA_HOME=C:\Program Files\Microsoft\jdk-25.0.5.102-hotspot"
+    )
+)
 if not exist "%JAVA_HOME%\bin\javac.exe" (
     echo [ERROR] JDK not found. Please check JAVA_HOME: %JAVA_HOME%
     pause
