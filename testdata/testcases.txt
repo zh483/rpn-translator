@@ -1,0 +1,28 @@
+# 词法分析器测试用例
+# 格式: 编号 | 输入表达式 | 类型 | 期望
+#   OK  : 期望列 = 渲染后的 token 流（TYPE(text)@pos，空格分隔）；空输入写成两个竖线之间留空
+#   ERR : 期望列 = 出错位置，采用 Lexer 内部的 0 基下标（与 CompileException.pos() 一致）
+# 说明: # 开头为注释，空行忽略；字段两侧空白会被 strip
+
+# ---------- 合法组 ----------
+L01 | 1        | OK | NUM(1)@0 EOF@1
+L02 | 12       | OK | NUM(12)@0 EOF@2
+L03 | 3.14     | OK | NUM(3.14)@0 EOF@4
+L04 | .5       | OK | NUM(.5)@0 EOF@2
+L05 | 5.       | OK | NUM(5.)@0 EOF@2
+L06 | 1+2*3    | OK | NUM(1)@0 PLUS(+)@1 NUM(2)@2 STAR(*)@3 NUM(3)@4 EOF@5
+L07 | (1+2)*3  | OK | LPAREN(()@0 NUM(1)@1 PLUS(+)@2 NUM(2)@3 RPAREN())@4 STAR(*)@5 NUM(3)@6 EOF@7
+L08 | 1 + 2    | OK | NUM(1)@0 PLUS(+)@2 NUM(2)@4 EOF@5
+L09 | 8/4%3    | OK | NUM(8)@0 SLASH(/)@1 NUM(4)@2 PERCENT(%)@3 NUM(3)@4 EOF@5
+L10 |          | OK | EOF@0
+
+# ---------- 边界组：数字后面紧跟数字（词法层合法，结构错误交给语法层）----------
+B01 | 1.2.3    | OK | NUM(1.2)@0 NUM(.3)@3 EOF@5
+B02 | 1..2     | OK | NUM(1.)@0 NUM(.2)@2 EOF@4
+
+# ---------- 错误组 ----------
+E01 | 1$a      | ERR | 1
+E02 | .        | ERR | 0
+E03 | 12ab     | ERR | 2
+E04 | #        | ERR | 0
+E05 | １+２     | ERR | 0
