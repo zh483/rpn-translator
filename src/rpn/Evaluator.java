@@ -43,7 +43,7 @@ public class Evaluator {
                                 throw new CompileException(CompileException.Kind.RUNTIME,
                                                             token.pos(),
                                                     "不能对0取模");
-                            stak.push(l%(int)r);
+                            stak.push(l%r);
                             break;
                         case SLASH:
                             if(r==0)
