@@ -53,10 +53,10 @@ git push          :: 推送到远程
 git pull          :: 拉取（单人开发一般用不到）
 ```
 
-> **代理坑**：本机 git 原来全局配了 `http.proxy = http://127.0.0.1:7897`，代理软件没开时连 GitHub 会报
-> `Failed to connect to github.com port 443 via 127.0.0.1`。已清除该全局配置（直连可用）。
-> 若以后要用代理：`git config --global http.proxy http://127.0.0.1:7897`；
-> 要恢复直连：`git config --global --unset http.proxy`。
+> **网络坑**：本机直连 `github.com:443` 会被间歇性重置（`api.github.com` 正常），因此本仓库配置了**仓库级**代理：
+> `git config --local http.proxy http://127.0.0.1:7897`（只对本仓库生效，全局配置未动）。
+> 推送前确保代理软件在运行；代理没开时 `git push` 会报 `Failed to connect ... 127.0.0.1:7897`。
+> 网络好时想吃直连：`git -c http.proxy= -c https.proxy= push`。
 
 ## 报告流水线
 
