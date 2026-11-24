@@ -1,7 +1,17 @@
 package rpn;
 import java.util.ArrayList;
 import java.util.List;
+/**
+ * 词法分析器
+ * Lexer
+ */
 public class Lexer {
+    /**
+     * 扫描整个输入串 返回记号序列
+     * @param src 表达式原文
+     * @return 返回token流
+     * @throws CompileException 输出词法分析错误+词法错误位置
+     */
     public List<Token> scan(String src){
         List<Token>tokens=new ArrayList<>();
         int i=0;
