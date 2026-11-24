@@ -145,7 +145,7 @@ def window(err=False):
     ax.add_patch(Rectangle((5, 6), 84, 6, linewidth=0.7, edgecolor="#C00000" if err else "#AAAAAA",
                            facecolor="#FDECEC" if err else "white"))
     if err:
-        ax.text(6, 9, "[语法错误] 第 5 个字符：期望 ')' 或运算符，实际读到 '*'", fontsize=7,
+        ax.text(6, 9, "[语法错误] 第 5 个字符: 期望 ')' 或运算符，实际读到 '*'", fontsize=7,
                 color="#C00000", va="center")
         ax.text(6, 3.6, "  1 + 2 * ) 3", fontsize=7.5, family="Consolas", va="center")
         ax.text(27, 3.6, "^", fontsize=8, family="Consolas", va="center", color="#C00000")

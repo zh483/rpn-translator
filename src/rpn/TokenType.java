@@ -1,6 +1,5 @@
 package rpn;
 /**
- * zh483 26/11/24
  * 词法单元类型
  * TokenType
  */

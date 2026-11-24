@@ -1,6 +1,8 @@
 package rpn;
+
+import java.util.Objects;
+
 /**
- * zh483 26/11/24
  * 自定义编译器错误
  * CompileException
 */
@@ -18,7 +20,7 @@ public class CompileException extends RuntimeException {
     private final Kind kind;
     private final int pos;
     public CompileException(Kind kind,int pos,String message){
-        super("["+kind.label()+"] "+"第 "+(pos+1)+" 个字符: "+message);
+        super("["+Objects.requireNonNull(kind, "kind")+"] 第 "+(pos+1)+" 个字符: "+message);
         this.kind=kind;
         this.pos=pos;
     }
