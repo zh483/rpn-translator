@@ -1,0 +1,33 @@
+{
+  // Ctrl+Shift+B          -> 门禁检查（默认构建任务）
+  // Ctrl+Shift+P -> Run Task -> 其他任务：编译 / 跑 TestRunner
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "门禁检查（check_project）",
+      "type": "shell",
+      "command": "py",
+      "args": ["-3.13", "tools/check_project.py"],
+      "group": { "kind": "build", "isDefault": true },
+      "presentation": { "reveal": "always", "panel": "shared", "clear": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "编译（javac）",
+      "type": "shell",
+      "command": "\"%JAVA_HOME%/bin/javac.exe\"",
+      "args": ["-encoding", "UTF-8", "-d", "out/classes", "src/rpn/*.java"],
+      "presentation": { "reveal": "always", "panel": "shared", "clear": true },
+      "problemMatcher": { "base": "$tsc", "fileLocation": ["relative", "${workspaceFolder}"] }
+    },
+    {
+      "label": "跑 TestRunner",
+      "type": "shell",
+      "command": "\"%JAVA_HOME%/bin/java.exe\"",
+      "args": ["-Dfile.encoding=UTF-8", "-cp", "out/classes", "rpn.TestRunner"],
+      "dependsOn": ["编译（javac）"],
+      "presentation": { "reveal": "always", "panel": "shared", "clear": true },
+      "problemMatcher": []
+    }
+  ]
+}
