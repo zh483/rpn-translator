@@ -3,7 +3,9 @@ package rpn;
 import java.util.ArrayList;
 import java.util.List;
 /**
- * 用递归下降法分析 LL(1) 文法
+ * 把中缀表达式转换成后缀表达式 同时分析LL(1)语法
+ * <p><构造器接受中缀tokens;parse()返回后缀tokens
+ * 出错时 throw CompileException 附带 位置,期望,实际 信息>
  * Parser
  */
 public class Parser {
@@ -13,7 +15,13 @@ public class Parser {
         this.tokens=tokens;
         this.pos=0;
     }
-
+    /**
+     * 
+     * 开始语法分析
+     * 
+     * @return 转换成后缀的tokens
+     * @throws CompileException <语法分析错误>
+     */
     public List<Token> parse(){
         var result=expr();
         expect(TokenType.EOF);
