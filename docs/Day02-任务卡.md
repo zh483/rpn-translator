@@ -65,11 +65,11 @@ try {
 
 ## 四、硬性约束（违反打回）
 
-- [ ] 三个文件都在 `package rpn;`
-- [ ] 文件名与 public 类型名**完全一致（含大小写）**
-- [ ] 无 `import java.awt` / `javax.swing` / `com.sun.net.httpserver`
-- [ ] 每个 public 类/记录/构造器有 Javadoc
-- [ ] 不用魔法数字（位置基准 0/1 的转换只出现在 `CompileException` 构造器里）
+- [x] 三个文件都在 `package rpn;`
+- [x] 文件名与 public 类型名**完全一致（含大小写）**
+- [x] 无 `import java.awt` / `javax.swing` / `com.sun.net.httpserver`
+- [x] 每个 public 类/记录/构造器有 Javadoc
+- [x] 不用魔法数字（位置基准 0/1 的转换只出现在 `CompileException` 构造器里）
 
 ## 五、交付给我什么
 
