@@ -21,7 +21,10 @@
 """
 import os
 import re
+import shutil
+import subprocess
 import sys
+import tempfile
 
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -179,6 +182,40 @@ def check_javadoc_refs():
             add("FAIL", f"{f}:{line}: Javadoc 引用了不存在的类型 '{name}'")
 
 
+def check_compile():
+    """编译全部源码。代码都编不过的提交，其他检查再漂亮也没意义。"""
+    if not os.path.isdir(SRC):
+        return
+    files = sorted(os.path.join(SRC, f) for f in os.listdir(SRC) if f.endswith(".java"))
+    if not files:
+        return
+
+    javac = shutil.which("javac")
+    if javac is None:
+        cand = os.path.join(os.environ.get("JAVA_HOME", ""), "bin", "javac.exe")
+        javac = cand if os.path.exists(cand) else None
+    if javac is None:
+        add("WARN", "找不到 javac 命令，跳过编译检查")
+        return
+
+    tmp = tempfile.mkdtemp(prefix="javac_chk_")
+    try:
+        r = subprocess.run([javac, "-encoding", "UTF-8", "-d", tmp] + files,
+                           capture_output=True, text=True,
+                           encoding="utf-8", errors="replace")
+        raw = (r.stdout or "") + (r.stderr or "")
+        if r.returncode == 0:
+            return
+        hits = [ln.strip() for ln in raw.splitlines() if re.search(r"\.java:\d+", ln)]
+        if hits:
+            for ln in hits[:8]:
+                add("FAIL", "编译错误: " + ln)
+        else:
+            add("FAIL", "编译失败（javac 返回非 0，输出无法解析）")
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
 def check_bat():
     for name in ("run.bat", "check.bat"):
         p = os.path.join(ROOT, name)
@@ -207,6 +244,7 @@ def main():
     print(f"检查 {len(files)} 个 Java 文件" + ("（定稿模式）" if final else "") + "\n" + "-" * 62)
     for f in files:
         check_java(os.path.join(SRC, f))
+    check_compile()
     check_javadoc_refs()
     check_bat()
     check_report(final)
