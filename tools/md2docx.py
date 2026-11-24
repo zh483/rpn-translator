@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 md2docx.py —— 把 report/*.md 渲染成符合课设模板格式的 docx。
 
@@ -398,17 +398,19 @@ def render_md(doc, md_path):
 
 
 # ------------------------------------------------------------------ 机器校验
-def validate(docx_path, log_path):
+def validate(docx_path, log_path, final=False):
     doc = Document(docx_path)
     out = []
-    ok, bad = [], []
+    ok, bad, warn = [], [], []
 
     def rec(tag, msg):
         out.append(f"[{tag}] {msg}")
         if tag == "OK":
             ok.append(msg)
-        else:
+        elif tag == "FAIL":
             bad.append(msg)
+        else:
+            warn.append(msg)
 
     paras = doc.paragraphs
     texts = [p.text.strip() for p in paras]
@@ -506,20 +508,23 @@ def validate(docx_path, log_path):
         if inside:
             chap4.append(t)
     n4 = len(cjk.findall("".join(chap4)))
-    rec("OK" if n4 >= 600 else "FAIL", f"第4章总结汉字数={n4}（要求≥600）")
+    kind = "OK" if n4 >= 600 else ("FAIL" if final else "WARN")
+    rec(kind, f"第4章总结汉字数={n4}（要求≥600；草稿期只提示，定稿加 --final 才判失败）")
 
     with open(log_path, "w", encoding="utf-8") as f:
         f.write("\n".join(out))
-        f.write(f"\n\n结果: {len(ok)} 项通过, {len(bad)} 项失败\n")
-    return len(ok), len(bad), out
+        f.write(f"\n\n结果: {len(ok)} 项通过, {len(warn)} 项提示, {len(bad)} 项失败\n")
+    return len(ok), len(warn), len(bad), out
 
 
 if __name__ == "__main__":
-    md = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, "report", "草稿-报告二.md")
-    out_docx = sys.argv[2] if len(sys.argv) > 2 else os.path.join(ROOT, "out", "报告二-草稿.docx")
+    FINAL = "--final" in sys.argv
+    argv = [a for a in sys.argv[1:] if not a.startswith("--")]
+    md = argv[0] if len(argv) > 0 else os.path.join(ROOT, "report", "草稿-报告二.md")
+    out_docx = argv[1] if len(argv) > 1 else os.path.join(ROOT, "out", "报告二-草稿.docx")
     os.makedirs(os.path.dirname(out_docx), exist_ok=True)
     stats = build_doc(md, out_docx)
     print("渲染完成:", out_docx, stats)
     log = os.path.splitext(out_docx)[0] + "-校验.txt"
-    nok, nbad, _ = validate(out_docx, log)
-    print(f"校验: {nok} OK / {nbad} FAIL -> {log}")
+    nok, nwarn, nbad, _ = validate(out_docx, log, final=FINAL)
+    print(f"校验: {nok} OK / {nwarn} WARN / {nbad} FAIL" + ("（定稿模式）" if FINAL else "（草稿模式）") + f" -> {log}")
