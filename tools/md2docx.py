@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 md2docx.py —— 把 report/*.md 渲染成符合课设模板格式的 docx。
 
@@ -219,11 +219,27 @@ def add_h(doc, text, level):
     return p
 
 
+INLINE = re.compile(r"(\*\*[^*]+\*\*|`[^`]+`)")
+
+
+def add_inline_runs(p, text, cn=SONG, size=BODY_SIZE, bold=False):
+    """按行内 Markdown 切段：**粗体** 加粗，`代码` 用等宽小字号。"""
+    for part in INLINE.split(text):
+        if not part:
+            continue
+        if part.startswith("**") and part.endswith("**") and len(part) > 4:
+            style_run(p.add_run(part[2:-2]), cn=cn, size=size, bold=True)
+        elif part.startswith("`") and part.endswith("`") and len(part) > 2:
+            style_run(p.add_run(part[1:-1]), cn=MONO, size=Pt(9.5), latin=MONO)
+        else:
+            style_run(p.add_run(part), cn=cn, size=size, bold=bold)
+
+
 def add_body(doc, text, indent=True, align=WD_ALIGN_PARAGRAPH.JUSTIFY):
     p = doc.add_paragraph()
     set_pf(p, before=Pt(5.25), after=Pt(5.25), line=LINE, align=align,
            first_indent=INDENT if indent else None)
-    style_run(p.add_run(text), cn=SONG, size=BODY_SIZE)
+    add_inline_runs(p, text)
     return p
 
 
