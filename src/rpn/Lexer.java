@@ -21,10 +21,10 @@ public class Lexer {
                 ++i;
                 continue;
             }
-            else if(Character.isDigit(c) || c=='.'){
+            else if((c>='0' && c<='9') || c=='.'){
                 int start=i;
                 boolean havepot=false;
-                while (Character.isDigit(c) || (c=='.' && !havepot)) {
+                while ((c>='0' && c<='9') || (c=='.' && !havepot)) {
                     if(c=='.') havepot=true;
                     ++i;
                     if(i==src.length()) break;
