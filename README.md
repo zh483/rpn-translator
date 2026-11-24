@@ -44,6 +44,20 @@ run.bat
 环境：**JDK 25 LTS**（`JAVA_HOME` 已配置）、VS Code + Extension Pack for Java、Git。
 不使用 Maven / Gradle：项目零第三方依赖，`javac` 直接编译最可靠，验收现场双击 `run.bat` 即可。
 
+## 远程仓库
+
+本地 `main` 跟踪 GitHub **私有**仓库：<https://github.com/zh483/rpn-translator>（候选题名之外不要再公开，避免抄袭风险）。
+
+```bat
+git push          :: 推送到远程
+git pull          :: 拉取（单人开发一般用不到）
+```
+
+> **代理坑**：本机 git 原来全局配了 `http.proxy = http://127.0.0.1:7897`，代理软件没开时连 GitHub 会报
+> `Failed to connect to github.com port 443 via 127.0.0.1`。已清除该全局配置（直连可用）。
+> 若以后要用代理：`git config --global http.proxy http://127.0.0.1:7897`；
+> 要恢复直连：`git config --global --unset http.proxy`。
+
 ## 报告流水线
 
 1. 只改 `report/草稿-报告二.md`（Markdown 约定见 `report/报告写作约定.md`）。
