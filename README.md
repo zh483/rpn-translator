@@ -53,10 +53,9 @@ git push          :: 推送到远程
 git pull          :: 拉取（单人开发一般用不到）
 ```
 
-> **网络坑**：本机直连 `github.com:443` 会被间歇性重置（`api.github.com` 正常），因此本仓库配置了**仓库级**代理：
-> `git config --local http.proxy http://127.0.0.1:7897`（只对本仓库生效，全局配置未动）。
-> 推送前确保代理软件在运行；代理没开时 `git push` 会报 `Failed to connect ... 127.0.0.1:7897`。
-> 网络好时想吃直连：`git -c http.proxy= -c https.proxy= push`。
+> **网络坑**：本机访问 `github.com:443` 会在「直连可用」和「必须走代理」之间来回切换，实测两者都出现过。
+> 所以**推送统一用 `push.bat`**：它依次尝试「当前 git 配置 → 强制直连 → 本地代理 127.0.0.1:7897」，任一成功即停。
+> 手动强制直连：`git -c http.proxy= -c https.proxy= push`；强制代理：`git -c http.proxy=http://127.0.0.1:7897 push`。
 
 ## 报告流水线
 
