@@ -32,7 +32,8 @@ public class Lexer {
                 }
                 String NUM=src.substring(start,i);
                 if(NUM.length()==1 && NUM.charAt(0)=='.')  //单独一个点
-                    throw new CompileException(rpn.CompileException.Kind.LEX, start, "非法字符: '"+NUM+"'");
+                    throw new CompileException(rpn.CompileException.Kind.LEX,
+                                                start, "非法字符: '"+NUM+"'");
                 tokens.add(new Token(TokenType.NUM,NUM,start, Double.parseDouble(NUM)));
                 continue;
             }
@@ -60,7 +61,8 @@ public class Lexer {
                         tokens.add(new Token(TokenType.RPAREN, ")", i, 0));
                         break;
                     default:
-                        throw new CompileException(rpn.CompileException.Kind.LEX, i, "非法字符: '"+c+"'");
+                        throw new CompileException(rpn.CompileException.Kind.LEX,
+                                                     i, "非法字符: '"+c+"'");
                 }
                 ++i;
             }

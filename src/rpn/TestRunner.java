@@ -131,10 +131,11 @@ public class TestRunner {
     /** 统一打印一行结果，维护 pass/fail 计数。 */
     private static void report(String id, String src, String expected, String actual, boolean ok) { 
         if(ok){
-            System.out.print("总共 "+pass+fail+" 次 失败 "+fail+"次 成功 "+pass+" 次");
+            System.out.print("总共 "+(pass+fail)+" 次 失败 "+fail+"次 成功 "+pass+" 次");
         }
         else{
-            System.out.println(id+' '+src+" 期望="+expected+" 实际="+actual+(expected.equals(actual)?" PASS":" FAIL"));
+            System.out.println(id+' '+src+" 期望="+expected+
+                                " 实际="+actual+(expected.equals(actual)?" PASS":" FAIL"));
             if(expected.equals(actual)) ++pass;
             else ++fail;
         }
