@@ -15,10 +15,10 @@ public class CompileException extends RuntimeException {
             return  label;
         }
     }
-    Kind kind;
-    int pos;
-    CompileException(Kind kind,int pos,String message){
-        super("["+kind.label()+"]"+"第"+(pos+1)+"个字符 "+message);
+    private final Kind kind;
+    private final int pos;
+    public CompileException(Kind kind,int pos,String message){
+        super("["+kind.label()+"] "+"第 "+(pos+1)+" 个字符: "+message);
         this.kind=kind;
         this.pos=pos;
     }

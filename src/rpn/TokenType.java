@@ -11,7 +11,7 @@ public enum TokenType{
     STAR,
     SLASH,
     PERCENT,
-    LOAREN,
+    LPAREN,
     RPAREN,
     EOF
 }
