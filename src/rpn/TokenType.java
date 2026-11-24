@@ -7,6 +7,7 @@ public enum TokenType{
     NUM("数字"),
     PLUS("加号"),
     MINUS("减号"),
+    NEG("负号"),
     STAR("乘号"),
     SLASH("除号"),
     PERCENT("取模"),
