@@ -134,6 +134,51 @@ def check_java(path):
             add("WARN", f"{name}:{i}: 字段 '{s}' 缺少访问修饰符（应为 private final）")
 
 
+KNOWN_EXCEPTIONS = {
+    "RuntimeException", "Exception", "Error", "Throwable",
+    "IllegalArgumentException", "IllegalStateException", "NullPointerException",
+    "ArithmeticException", "IndexOutOfBoundsException",
+    "StringIndexOutOfBoundsException", "NumberFormatException",
+    "UnsupportedOperationException", "ClassCastException",
+}
+
+# 本包允许被 Javadoc 引用的类型（由 check_javadoc_refs 动态补全）
+DECLARED_TYPES = set()
+
+
+def check_javadoc_refs():
+    """校验 Javadoc 里的类型引用真实存在：@throws / {@link X} / @see X。
+
+    只比对名字是否在「本包已声明的类型」或「JDK 已知异常」里，
+    专抓 @throws CompileExecption 这类笔误（javadoc 的 doclint 退出码不可靠，故手写）。
+    """
+    if not os.path.isdir(SRC):
+        return
+    files = sorted(f for f in os.listdir(SRC) if f.endswith(".java"))
+
+    # 第一遍：收集本包声明的类型名 + 每个文件的 import
+    decl_re = re.compile(r"(?m)^\s*public\s+(?:final\s+|abstract\s+|sealed\s+)?"
+                         r"(?:class|record|interface|enum)\s+(\w+)")
+    srcs = {}
+    for f in files:
+        text = open(os.path.join(SRC, f), encoding="utf-8", errors="replace").read()
+        srcs[f] = text
+        for m in decl_re.finditer(text):
+            DECLARED_TYPES.add(m.group(1))
+
+    # 第二遍：检查 Javadoc 里的类型引用
+    ref_re = re.compile(r"@throws\s+(\w+)|\{@link\s+(\w+)|@see\s+(\w+)")
+    imp_re = re.compile(r"(?m)^\s*import\s+[\w.]*\.(\w+)\s*;")
+    for f, text in srcs.items():
+        imported = set(imp_re.findall(text))
+        for m in ref_re.finditer(text):
+            name = m.group(1) or m.group(2) or m.group(3)
+            if name in DECLARED_TYPES or name in KNOWN_EXCEPTIONS or name in imported:
+                continue
+            line = text.count("\n", 0, m.start()) + 1
+            add("FAIL", f"{f}:{line}: Javadoc 引用了不存在的类型 '{name}'")
+
+
 def check_bat():
     for name in ("run.bat", "check.bat"):
         p = os.path.join(ROOT, name)
@@ -162,6 +207,7 @@ def main():
     print(f"检查 {len(files)} 个 Java 文件" + ("（定稿模式）" if final else "") + "\n" + "-" * 62)
     for f in files:
         check_java(os.path.join(SRC, f))
+    check_javadoc_refs()
     check_bat()
     check_report(final)
 
