@@ -119,6 +119,20 @@ def check_java(path):
         if meth[0].isupper():
             add("WARN", f"{name}: 方法名 '{meth}' 应为 camelCase（首字母小写）")
 
+    # Javadoc 里写日期 / 作者 = IDE 模板残留（报告要贴代码，这不是业界规范）
+    if re.search(r"\d{4}[-/]\d{1,2}[-/]\d{1,2}|\d{2}/\d{2}/\d{2}", text):
+        add("WARN", f"{name}: Javadoc 里出现日期，删掉（模板残留，不是内容）")
+
+    # 类体成员（恰好 4 空格缩进的字段声明）缺少访问修饰符 → 应 private final
+    for i, line in enumerate(text.splitlines(), 1):
+        s = line.strip()
+        if not line.startswith("    ") or line.startswith("     "):
+            continue
+        if re.match(r"^(?:public|private|protected|static|final|abstract|@|//|/\*|\*|\})", s):
+            continue
+        if re.match(r"^[A-Za-z_][\w<>\[\],. ]*\s+\w+\s*;", s):
+            add("WARN", f"{name}:{i}: 字段 '{s}' 缺少访问修饰符（应为 private final）")
+
 
 def check_bat():
     for name in ("run.bat", "check.bat"):
