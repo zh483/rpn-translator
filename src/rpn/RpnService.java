@@ -13,7 +13,6 @@ public class RpnService {
      * @throws CompileException 词法/语法/运行时错误
      */
     public RpnResult evaluate(String expression) { 
-        try{
             Lexer lexer=new Lexer();
             var tokens=lexer.scan(expression);
             Parser parser=new Parser(tokens);
@@ -27,11 +26,6 @@ public class RpnService {
             Evaluator evaluator=new Evaluator();
             double eval=evaluator.eval(rpn);
             return new RpnResult(expression, rpnText, ResultFormatter.format(eval));
-        }
-        catch(CompileException e){
-            System.out.print(e.getMessage());
-            throw e;
-        }
     }
     public record RpnResult(String expression,String rpnText, String valueText) {}
 }
