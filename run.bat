@@ -1,8 +1,8 @@
 @echo off
 rem =====================================================================
-rem  Course design 2 launcher: compile -> start local server -> open browser
-rem  NOTE: keep this file ASCII-only. cmd.exe parses .bat with the OEM
-rem        code page (GBK on zh-CN Windows); UTF-8 Chinese breaks parsing.
+rem  Course design 2 launcher: compile -> launch Swing desktop UI
+rem  NOTE: keep this file ASCII-only (cmd parses .bat with the OEM code
+rem        page; UTF-8 Chinese breaks parsing).
 rem =====================================================================
 setlocal
 cd /d "%~dp0"
@@ -25,8 +25,6 @@ rem --- friendly message when there is no source yet ---
 dir /b src\rpn\*.java >nul 2>&1
 if errorlevel 1 (
     echo [INFO] No .java files under src\rpn yet.
-    echo        Create Token / TokenType / CompileException / Lexer first,
-    echo        see the Day01 task card under docs\
     pause
     exit /b 0
 )
@@ -39,9 +37,8 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo [2/2] Starting server at http://127.0.0.1:8080 ...
-start "" http://127.0.0.1:8080
+echo [2/2] Launching desktop UI ...
 "%JAVA_HOME%\bin\java.exe" -cp out\classes rpn.Main
 
-echo Server stopped.
+echo Application closed.
 pause
