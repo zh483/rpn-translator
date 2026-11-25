@@ -112,10 +112,12 @@ def check_java(path):
         if len(line) > 100:
             add("WARN", f"{name}:{i}: 行宽 {len(line)} > 100")
 
-    # 方法命名 camelCase
+    # 方法命名 camelCase（跳过 record/class/interface/enum 声明，避免误报）
     for m in re.finditer(r"(?m)^\s+(?:public|private|protected)\s+"
                          r"(?:static\s+|final\s+|abstract\s+|synchronized\s+)*"
                          r"[\w<>\[\],.? ]+?\s+(\w+)\s*\(", text):
+        if re.search(r"\b(record|class|interface|enum)\b", m.group(0)):
+            continue
         meth = m.group(1)
         if meth in (stem,) or not meth[:1].isalpha():
             continue
