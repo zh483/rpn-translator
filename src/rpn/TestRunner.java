@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 批量回归测试入口：依次跑词法、语法、求值三组用例，输出逐条结果与总计。
+ * 批量回归测试入口：依次跑词法、语法、求值、格式化四组用例，输出逐条结果与总计。
  *
  * <p>用例数据放在 {@code testdata/} 下，每行格式为「编号 | 输入 | 类型 | 期望」，
  * 以 {@code #} 开头的行与空行会被跳过。全部通过时退出码为 0，存在失败时为 1，
@@ -21,12 +21,13 @@ public class TestRunner {
     private static final Path LEX_CASES = Path.of("testdata", "testcases.txt");
     private static final Path PARSE_CASES = Path.of("testdata", "parsecases.txt");
     private static final Path EVAL_CASES = Path.of("testdata", "evalcases.txt");
+    private static final Path FORMAT_CASES = Path.of("testdata", "formatcases.txt");
 
     private static int pass = 0;
     private static int fail = 0;
 
     /**
-     * 跑完三组用例并打印汇总。
+     * 跑完四组用例并打印汇总。
      *
      * @param args 未使用
      */
@@ -35,6 +36,7 @@ public class TestRunner {
             runLexerCases();
             runParseCases();
             runEvalCases();
+            runFormatCases();
         } catch (IOException e) {
             System.out.println("读不到用例文件，请在项目根目录运行：" + e.getMessage());
             System.exit(2);
@@ -104,6 +106,26 @@ public class TestRunner {
                 ok = kind.equals("VERR")
                         && e.kind() == CompileException.Kind.RUNTIME
                         && String.valueOf(e.pos()).equals(expect);
+            }
+            record(id, src, expect, actual, ok);
+        }
+    }
+
+    /** 格式化组（全链路）：FOK 比对界面显示文本，FERR 比对错误位置（0 基）。 */
+    private static void runFormatCases() throws IOException {
+        System.out.println("== 格式化（RpnService）==");
+        RpnService service = new RpnService();
+        for (String[] f : readCases(FORMAT_CASES)) {
+            String id = f[0], src = f[1], kind = f[2], expect = f[3];
+            String actual;
+            boolean ok;
+            try {
+                RpnService.RpnResult result = service.evaluate(src);
+                actual = result.valueText();
+                ok = kind.equals("FOK") && actual.equals(expect);
+            } catch (CompileException e) {
+                actual = describe(e);
+                ok = kind.equals("FERR") && String.valueOf(e.pos()).equals(expect);
             }
             record(id, src, expect, actual, ok);
         }

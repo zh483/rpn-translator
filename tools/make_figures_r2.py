@@ -68,7 +68,7 @@ def fig21():
     box(ax, 18, 30.0, 64, 8.0, "算术表达式的语法制导翻译与求值系统", fs=9, bold=True, fill=ACCENT)
 
     xs = [3, 36, 69]
-    labels = ["① 表达式输入与编辑\n（浏览器界面）", "② 词法分析器\n（Token 序列）",
+    labels = ["① 表达式输入与编辑\n（桌面窗口）", "② 词法分析器\n（Token 序列）",
               "③ 语法制导翻译\n（中缀 → 后缀）"]
     for x, t in zip(xs, labels):
         box(ax, x, 17.0, 28, 7.5, t, fs=7.5)
@@ -171,7 +171,13 @@ def fig32():
 
 
 if __name__ == "__main__":
-    fig21(); fig22(); fig31(); fig32()
+    fig21()
+    fig22()
+    if os.path.exists(os.path.join(FIGS, "ui-real.flag")):
+        print("skip fig3-1/fig3-2: real UI screenshots present")
+    else:
+        fig31()
+        fig32()
     for f in ("fig2-1.png", "fig2-2.png", "fig3-1.png", "fig3-2.png"):
         p = os.path.join(FIGS, f)
         print(f"{f:12s} {os.path.getsize(p):7d} bytes")
