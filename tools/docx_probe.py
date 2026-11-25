@@ -23,10 +23,8 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Cm, Pt
 
-ROOT = r"G:\compiler\reporet_2"
-TPL = os.path.join(
-    ROOT, "0000000000--某某--编译原理--逆波兰式的翻译与求值--课设2.docx"
-)
+from tpl import ROOT, TPL
+
 OUT = os.path.join(ROOT, "out")
 FIGS = os.path.join(ROOT, "figs")
 os.makedirs(OUT, exist_ok=True)

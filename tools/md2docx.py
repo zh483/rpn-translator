@@ -25,6 +25,7 @@ md2docx.py —— 把 report/*.md 渲染成符合课设模板格式的 docx。
 ----
     py -3.13 tools/md2docx.py report/草稿-报告二.md out/报告二-草稿.docx
 """
+import json
 import os
 import re
 import sys
@@ -38,10 +39,8 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Cm, Pt, RGBColor
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TPL = os.path.join(
-    ROOT, "0000000000--某某--编译原理--逆波兰式的翻译与求值--课设2.docx"
-)
+from tpl import ROOT, TPL
+
 FIGS = os.path.join(ROOT, "figs")
 
 # ---- 模板实测参数（见 out/template_structure.txt / probe_report.txt） ----
@@ -55,7 +54,20 @@ CAPTION_SIZE = Pt(10.5)
 TABLE_SIZE = Pt(9)
 CODE_SIZE = Pt(8.5)
 
-COVER = {"学号": "0000000000", "姓名": "某某", "专业": "软件工程"}
+COVER_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cover.local.json")
+
+
+def load_cover():
+    """封面个人信息放在未跟踪的 cover.local.json，仓库里不留学号/姓名。"""
+    keys = ("学号", "姓名", "专业")
+    if os.path.exists(COVER_FILE):
+        with open(COVER_FILE, encoding="utf-8") as f:
+            data = json.load(f)
+        return {k: str(data.get(k, "")) for k in keys}
+    return {k: "" for k in keys}
+
+
+COVER = load_cover()
 
 # ---- OOXML 子元素顺序：直接 append 会让 Word 打开时提示"内容有问题/修复" ----
 ORDER_PPR = [
@@ -215,6 +227,8 @@ def fill_cover(doc):
         if key is None:
             continue
         value = COVER[targets[key]]
+        if not value:
+            continue
         # 找第一个带下划线且内容是空白的 run，填入值；不足则补空格保持行宽
         for r in p.runs:
             if r.font.underline and not r.text.strip():

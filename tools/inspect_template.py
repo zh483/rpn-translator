@@ -6,8 +6,8 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 from docx import Document
 from docx.shared import RGBColor
+from tpl import TPL
 
-TPL = r"G:\compiler\reporet_2\0000000000--某某--编译原理--逆波兰式的翻译与求值--课设2.docx"
 d = Document(TPL)
 
 print("=== sections ===")

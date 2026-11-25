@@ -7,3 +7,11 @@ Thumbs.db
 
 __pycache__/
 *.pyc
+
+# ---- 个人材料：学号/姓名、课程报告正文、模板与提交包，只留本地 ----
+*.docx
+*.pdf
+*.zip
+report/
+*课程设计*/
+tools/cover.local.json
