@@ -57,6 +57,37 @@ CODE_SIZE = Pt(8.5)
 
 COVER = {"学号": "0000000000", "姓名": "某某", "专业": "软件工程"}
 
+# ---- OOXML 子元素顺序：直接 append 会让 Word 打开时提示"内容有问题/修复" ----
+ORDER_PPR = [
+    "pStyle", "keepNext", "keepLines", "pageBreakBefore", "framePr",
+    "widowControl", "numPr", "suppressLineNumbers", "pBdr", "shd", "tabs",
+    "suppressAutoHyphens", "kinsoku", "wordWrap", "overflowPunct",
+    "topLinePunct", "autoSpaceDE", "autoSpaceDN", "bidi", "adjustRightInd",
+    "snapToGrid", "spacing", "ind", "contextualSpacing", "mirrorIndents",
+    "suppressOverlap", "jc", "textDirection", "textAlignment",
+    "textboxTightWrap", "outlineLvl", "divId", "cnfStyle", "rPr", "sectPr",
+    "pPrChange",
+]
+ORDER_TBLPR = [
+    "tblStyle", "tblpPr", "tblOverlap", "bidiVisual", "tblStyleRowBandSize",
+    "tblStyleColBandSize", "tblW", "jc", "tblCellSpacing", "tblInd",
+    "tblBorders", "shd", "tblLayout", "tblCellMar", "tblLook", "tblCaption",
+    "tblDescription", "tblPrChange",
+]
+
+
+def insert_ordered(parent, child, order):
+    """把 child 插到 parent 中子元素的 schema 位置，而不是无脑 append。"""
+    tag = child.tag.split("}")[-1]
+    idx = order.index(tag)
+    for existing in list(parent):
+        etag = existing.tag.split("}")[-1]
+        if etag in order and order.index(etag) > idx:
+            existing.addprevious(child)
+            return child
+    parent.append(child)
+    return child
+
 
 # ------------------------------------------------------------------ 基础排版
 def style_run(run, cn=SONG, size=BODY_SIZE, bold=False, latin=LATIN, color=None):
@@ -100,7 +131,7 @@ def shade(p, fill="F2F2F2"):
     shd.set(qn("w:val"), "clear")
     shd.set(qn("w:color"), "auto")
     shd.set(qn("w:fill"), fill)
-    ppr.append(shd)
+    insert_ordered(ppr, shd, ORDER_PPR)
 
 
 def add_bottom_border(p):
@@ -112,7 +143,7 @@ def add_bottom_border(p):
     bottom.set(qn("w:space"), "1")
     bottom.set(qn("w:color"), "808080")
     pbdr.append(bottom)
-    ppr.append(pbdr)
+    insert_ordered(ppr, pbdr, ORDER_PPR)
 
 
 def table_borders(table):
@@ -125,7 +156,7 @@ def table_borders(table):
         el.set(qn("w:space"), "0")
         el.set(qn("w:color"), "000000")
         borders.append(el)
-    tbl_pr.append(borders)
+    insert_ordered(tbl_pr, borders, ORDER_TBLPR)
 
 
 # ------------------------------------------------------------------ 模板手术
